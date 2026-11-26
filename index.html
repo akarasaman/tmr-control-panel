@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>TMR Control Panel v0.3</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d2e;--panel2:#172438;--line:#29384e;--text:#edf3fb;--muted:#a5b4c8;--accent:#7dd3fc;--accent2:#38bdf8;--green:#86efac;--amber:#fcd34d;--red:#fda4af;--shadow:0 16px 40px rgba(0,0,0,.22)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(1000px 500px at 85% -15%,#18324d 0%,transparent 62%),var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1160px;margin:0 auto;padding:22px 18px 60px}.top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin:5px 0 20px}.brand{display:flex;gap:14px;align-items:center}.logo{width:46px;height:46px;border-radius:14px;background:linear-gradient(145deg,#38bdf8,#2563eb);display:grid;place-items:center;color:white;font-weight:900;font-size:20px;box-shadow:0 8px 25px #0ea5e955}.eyebrow{font-size:11px;letter-spacing:.16em;color:var(--accent);font-weight:800}.top h1{font-size:clamp(22px,4vw,31px);margin:1px 0 0;letter-spacing:-.03em}.sub{color:var(--muted);font-size:13px;margin-top:3px}.top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.pill{border:1px solid var(--line);background:#162338;border-radius:999px;padding:6px 11px;font-size:12px;color:var(--muted);white-space:nowrap}.pill strong{color:var(--text)}
+.nav{display:flex;gap:6px;overflow-x:auto;padding:5px;margin:0 0 18px;background:#0f1928;border:1px solid var(--line);border-radius:14px;position:sticky;top:6px;z-index:5;box-shadow:var(--shadow)}.nav button{border:0;background:transparent;color:var(--muted);padding:10px 14px;border-radius:10px;white-space:nowrap;font-weight:650;font-size:13px}.nav button.active{background:#1d344d;color:#e7f7ff;box-shadow:inset 0 0 0 1px #315575}
+.panel{display:none}.panel.active{display:block}.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}.card{background:linear-gradient(180deg,rgba(23,36,56,.96),rgba(17,29,46,.96));border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:var(--shadow);min-width:0}.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-7{grid-column:span 7}.span-6{grid-column:span 6}.span-5{grid-column:span 5}.span-4{grid-column:span 4}.card h2{font-size:17px;margin:0 0 11px}.card h3{font-size:14px;margin:0 0 8px}.muted{color:var(--muted)}.small{font-size:12px}.tiny{font-size:11px}.field{display:flex;flex-direction:column;gap:6px;margin:0 0 12px}.field label{font-size:12px;font-weight:750;color:#c5d3e5}.field input,.field textarea,.field select,.control-input{width:100%;background:#0c1727;border:1px solid #33445d;color:var(--text);border-radius:10px;padding:10px 11px}.field textarea{min-height:116px;resize:vertical}.field textarea.large{min-height:200px}.field input::placeholder,.field textarea::placeholder{color:#687b94}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row.between{justify-content:space-between}.btn{border:1px solid #38516c;background:#1c334d;color:#eaf7ff;border-radius:10px;padding:9px 13px;font-weight:750;font-size:12px;transition:.15s}.btn:hover{background:#254461;transform:translateY(-1px)}.btn.primary{background:linear-gradient(135deg,#0284c7,#2563eb);border-color:#329ddd;color:white}.btn.ghost{background:transparent;border-color:var(--line);color:var(--muted)}.btn.warn{background:#47351a;border-color:#87652a;color:#fde68a}.btn.danger{background:#451f2a;border-color:#81384b;color:#fecdd3}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 13px}.section-title h2{margin:0;font-size:20px}.stat{background:#0d1929;border:1px solid var(--line);border-radius:13px;padding:13px}.stat .n{font-size:25px;font-weight:850;letter-spacing:-.04em}.stat .l{font-size:11px;color:var(--muted)}.agent-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.agent{border:1px solid var(--line);background:#101c2c;border-radius:13px;padding:12px;min-width:0}.agent .id{font-weight:900;font-size:19px;color:var(--accent)}.agent .role{font-size:12px;font-weight:750}.agent .desc{font-size:11px;color:var(--muted);margin-top:4px}.status{font-size:10px;border-radius:99px;padding:3px 7px;border:1px solid #3c526b;color:#c1d1e4;white-space:nowrap}.status.done{border-color:#2f7650;color:var(--green);background:#153324}.status.wait{border-color:#765a28;color:var(--amber);background:#322818}.status.none{color:#9aabc0}
+.output{background:#07111e;border:1px solid #30445f;border-radius:12px;padding:12px;white-space:pre-wrap;overflow-wrap:anywhere;max-height:420px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;line-height:1.55;color:#d8e8f9}.output:empty:before{content:"ここに生成されたプロンプトが表示されます";color:#71849e}.notice{border-left:3px solid var(--accent2);background:#10253a;border-radius:7px;padding:10px 12px;color:#c9ddec;font-size:12px}.notice.warn{border-left-color:#eab308;background:#2b2517;color:#f5e5b2}.divider{height:1px;background:var(--line);margin:14px 0}.tag{display:inline-block;padding:3px 7px;border:1px solid var(--line);border-radius:6px;color:var(--muted);font-size:10px;margin:2px}.record{border:1px solid var(--line);background:#0e1a2a;border-radius:11px;padding:11px;margin-top:9px}.record-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.record pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:190px;overflow:auto;font:11px/1.5 ui-monospace,monospace;color:#cddced;margin:9px 0 0}.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed #3b4c63;border-radius:12px;font-size:12px}.hidden{display:none!important}.footer{margin-top:24px;padding:15px 2px;color:#8293a8;font-size:11px;border-top:1px solid var(--line)}
+@media(max-width:800px){.span-8,.span-7,.span-6,.span-5,.span-4{grid-column:span 12}.agent-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.top{flex-direction:column}.top-actions{justify-content:flex-start}.wrap{padding:15px 12px 42px}.card{padding:14px}.nav{top:3px}.nav button{padding:9px 11px}}
+@media(max-width:400px){.agent-grid{grid-template-columns:1fr 1fr}.btn{padding:9px 10px}.pill{font-size:10px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="logo">T</div><div><div class="eyebrow">TRINITY MATH RESEARCH</div><h1>TMR Control Panel <span class="muted" style="font-size:15px">v0.3</span></h1><div class="sub">手動連携・オフライン運用ツール / API接続なし</div></div></div>
+    <div class="top-actions"><span class="pill">実験 <strong id="topExp">EXP001</strong></span><span class="pill">ROUND <strong id="topRound">1</strong></span><button class="btn primary" id="quickExport">バックアップを書き出す</button></div>
+  </header>
+
+  <nav class="nav" aria-label="メインメニュー">
+    <button class="active" data-tab="setup">① 実験設定</button>
+    <button data-tab="prompts">② 指示を生成</button>
+    <button data-tab="responses">③ 回答を保存</button>
+    <button data-tab="monitor">④ Monitor</button>
+    <button data-tab="validation">⑤ 検証</button>
+    <button data-tab="archive">⑥ データ保管</button>
+  </nav>
+
+  <main>
+  <section class="panel active" id="tab-setup">
+    <div class="section-title"><h2>実験設定</h2><span class="status done">LOCAL WORKSPACE</span></div>
+    <div class="grid">
+      <div class="card span-8">
+        <h2>研究対象</h2>
+        <div class="grid" style="gap:9px">
+          <div class="field" style="grid-column:span 5"><label for="experimentId">実験ID</label><input id="experimentId" value="EXP001" maxlength="40"></div>
+          <div class="field" style="grid-column:span 7"><label for="experimentTitle">実験名</label><input id="experimentTitle" placeholder="例：不等式の構造探索"></div>
+        </div>
+        <div class="field"><label for="problem">研究対象の問題文</label><textarea class="large" id="problem" placeholder="ここに数学的な問題文を入力。全Researcherに同じものを渡します。"></textarea></div>
+        <div class="field"><label for="sharedMaterials">全員に共通して渡す資料・定義（任意）</label><textarea id="sharedMaterials" placeholder="定義、使用可能な前提、資料など。ROUND 1では全員に同じ内容を渡します。"></textarea></div>
+        <div class="row between"><span class="muted tiny" id="lastSaved">変更はこのブラウザ内に自動保存されます。</span><button class="btn primary" id="saveSetup">設定を保存</button></div>
+      </div>
+      <div class="card span-4">
+        <h2>進行状況</h2>
+        <div class="grid" style="gap:8px">
+          <div class="stat" style="grid-column:span 6"><div class="n" id="statRecords">0</div><div class="l">保存済み回答</div></div>
+          <div class="stat" style="grid-column:span 6"><div class="n" id="statCandidates">0</div><div class="l">候補登録数</div></div>
+          <div class="stat" style="grid-column:span 6"><div class="n" id="statResearchers">0/4</div><div class="l">今ROUNDの回答</div></div>
+          <div class="stat" style="grid-column:span 6"><div class="n" id="statValidated">0</div><div class="l">検証済み候補</div></div>
+        </div>
+        <div class="divider"></div>
+        <div class="field"><label for="roundNumber">現在のROUND</label><input type="number" id="roundNumber" min="1" max="999" value="1"></div>
+        <div class="field"><label for="phase">現在のPHASE</label><select id="phase"><option value="INITIALIZATION">INITIALIZATION</option><option value="FIRST_RECALL">FIRST_RECALL</option><option value="INDEPENDENT_EXPLORATION" selected>INDEPENDENT_EXPLORATION</option><option value="COLLABORATIVE_EXPLORATION">COLLABORATIVE_EXPLORATION</option><option value="VALIDATION">VALIDATION</option><option value="FINAL_REPORT">FINAL_REPORT</option></select></div>
+        <button class="btn" id="nextRound">ROUNDを +1</button>
+        <div class="notice warn" style="margin-top:12px">ROUND 1の回答を回収するまでは、他AIの回答を研究AIに共有しないでください。</div>
+      </div>
+      <div class="card span-12">
+        <div class="section-title"><h2>エージェント構成</h2><span class="muted tiny">初期実験：7エージェント</span></div>
+        <div class="agent-grid" id="agentCards"></div>
+        <div class="notice" style="margin-top:12px">A〜Dは会話コンテキストを分離した研究AIです。Monitorは提出済みの結果だけを受け取り、Validatorは独立検証を行います。NormalにはTMRの設計思想・他AIの結果を渡しません。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-prompts">
+    <div class="section-title"><h2>指示を生成</h2><span class="muted tiny">生成 → コピー → 各AIの別チャットに貼り付け</span></div>
+    <div class="grid">
+      <div class="card span-4">
+        <h2>メッセージ設定</h2>
+        <div class="field"><label for="targetAgent">送信先</label><select id="targetAgent"><option value="A">Researcher A — 構造分析</option><option value="B">Researcher B — 知識照合</option><option value="C">Researcher C — 自由探索</option><option value="D">Researcher D — 批判的探索</option><option value="MONITOR">Meta Monitor</option><option value="VALIDATOR">Validator</option><option value="NORMAL">Normal（独立解答）</option></select></div>
+        <div class="field"><label for="messageType">指示の種類</label><select id="messageType">
+          <option value="INIT">INIT — 初期設定</option><option value="RECALL">RECALL — First Recall</option><option value="RESEARCH" selected>RESEARCH — 探索</option><option value="NORMAL_SOLVE">NORMAL_SOLVE — 通常解答</option><option value="MONITOR_ANALYSIS">MONITOR_ANALYSIS — 集約・分析</option><option value="NEXT_TASK">NEXT_TASK — 次ROUNDの個別指示</option><option value="BLIND_VERIFY">BLIND_VERIFY — 命題の独立検証</option><option value="PROOF_AUDIT">PROOF_AUDIT — 証明監査</option><option value="FINAL_REPORT">FINAL_REPORT — 最終報告</option>
+        </select></div>
+        <div class="field"><label for="taskRound">ROUND番号</label><input type="number" id="taskRound" min="1" value="1"></div>
+        <div class="field"><label for="taskSpecific">個別タスク・追加条件</label><textarea id="taskSpecific" placeholder="Monitorからの個別指示、検証対象、追加条件など"></textarea></div>
+        <div class="field"><label for="sharedData">共有する情報</label><textarea id="sharedData" placeholder="ROUND 2以降に限定共有する要約など。ROUND 1では空欄にしてください。"></textarea></div>
+        <div class="row"><button class="btn primary" id="generatePrompt">プロンプトを生成</button><button class="btn ghost" id="clearPrompt">入力をクリア</button></div>
+      </div>
+      <div class="card span-8">
+        <div class="section-title"><h2>生成されたプロンプト</h2><button class="btn primary" id="copyPrompt">コピー</button></div>
+        <div class="output" id="promptOutput" aria-live="polite"></div>
+        <div class="divider"></div>
+        <h3>初期設定をまとめて生成</h3>
+        <p class="muted small">各研究AIの新規チャットに、共通憲章＋そのAI専用設定を一度だけ貼ります。Monitor・Validatorは別々のチャットに設定してください。Normalには独立解答用の設定だけを送ります。</p>
+        <div class="row" id="initButtons">
+          <button class="btn" data-init="A">A 初期設定</button><button class="btn" data-init="B">B 初期設定</button><button class="btn" data-init="C">C 初期設定</button><button class="btn" data-init="D">D 初期設定</button><button class="btn" data-init="MONITOR">Monitor設定</button><button class="btn" data-init="VALIDATOR">Validator設定</button><button class="btn" data-init="NORMAL">Normal設定</button>
+        </div>
+        <div class="notice warn" style="margin-top:12px">Normal設定はTMRに言及しない内容です。Normalのチャットには、TMR関連のプロンプトや他AIの出力を貼らないでください。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-responses">
+    <div class="section-title"><h2>回答を保存</h2><span class="muted tiny">保存した原文は追記式で保管</span></div>
+    <div class="grid">
+      <div class="card span-5">
+        <h2>回答の登録</h2>
+        <div class="field"><label for="responseAgent">回答したAI</label><select id="responseAgent"><option value="A">Researcher A</option><option value="B">Researcher B</option><option value="C">Researcher C</option><option value="D">Researcher D</option><option value="MONITOR">Meta Monitor</option><option value="VALIDATOR">Validator</option><option value="NORMAL">Normal</option></select></div>
+        <div class="field"><label for="responseType">回答の種類</label><select id="responseType"><option value="RECALL">RECALL</option><option value="RESEARCH" selected>RESEARCH</option><option value="MONITOR_ANALYSIS">MONITOR_ANALYSIS</option><option value="NEXT_TASKS">NEXT_TASKS</option><option value="NORMAL_SOLVE">NORMAL_SOLVE</option><option value="BLIND_VERIFY">BLIND_VERIFY</option><option value="PROOF_AUDIT">PROOF_AUDIT</option><option value="FINAL_REPORT">FINAL_REPORT</option><option value="OTHER">OTHER</option></select></div>
+        <div class="field"><label for="responseRound">ROUND</label><input id="responseRound" type="number" min="1" value="1"></div>
+        <div class="field"><label for="responseMessageId">対応するMESSAGE_ID（任意）</label><input id="responseMessageId" placeholder="TMR-EXP001-R1-A-RESEARCH"></div>
+        <div class="field"><label for="responseText">AIの返答原文</label><textarea id="responseText" class="large" placeholder="AIの回答をここにそのまま貼り付けてください"></textarea></div>
+        <button class="btn primary" id="saveResponse">原文を保存</button>
+        <p class="muted tiny">保存後の原文は編集せず、新しい回答や訂正は別レコードとして追加してください。</p>
+      </div>
+      <div class="card span-7">
+        <div class="section-title"><h2>保存済み回答</h2><span class="pill" id="recordCount">0件</span></div>
+        <div class="field"><label for="recordFilter">表示を絞り込む</label><select id="recordFilter"><option value="ALL">すべて</option><option value="A">Researcher A</option><option value="B">Researcher B</option><option value="C">Researcher C</option><option value="D">Researcher D</option><option value="MONITOR">Monitor</option><option value="VALIDATOR">Validator</option><option value="NORMAL">Normal</option></select></div>
+        <div id="recordList"><div class="empty">まだ回答は保存されていません。</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-monitor">
+    <div class="section-title"><h2>Monitorへの受け渡し</h2><span class="muted tiny">研究AIの結果を統合する</span></div>
+    <div class="grid">
+      <div class="card span-5">
+        <h2>集約対象</h2>
+        <div class="field"><label for="monitorRound">集約するROUND</label><input type="number" id="monitorRound" min="1" value="1"></div>
+        <div class="field"><label for="monitorExtra">Monitorへの補足指示（任意）</label><textarea id="monitorExtra" placeholder="今回特に確認してほしい点など"></textarea></div>
+        <button class="btn primary" id="buildMonitor">A〜Dの回答をまとめる</button>
+        <div class="notice warn" style="margin-top:12px">Monitorには回答原文を渡します。Normalの解答は混ぜないでください。Monitorのチャットは研究AIと分けます。</div>
+      </div>
+      <div class="card span-7">
+        <div class="section-title"><h2>Monitorに貼る入力</h2><button class="btn primary" id="copyMonitor">コピー</button></div>
+        <div class="output" id="monitorOutput"></div>
+      </div>
+      <div class="card span-12">
+        <h2>Monitorから受け取った次ROUNDの個別指示</h2>
+        <p class="muted small">Monitorの回答から各AI向けの指示を取り出して貼り付けます。個別指示は次のプロンプト生成時に利用できます。</p>
+        <div class="grid">
+          <div class="span-6 field"><label for="nextA">Researcher A向け</label><textarea id="nextA" placeholder="TASK_Aの内容"></textarea></div>
+          <div class="span-6 field"><label for="nextB">Researcher B向け</label><textarea id="nextB" placeholder="TASK_Bの内容"></textarea></div>
+          <div class="span-6 field"><label for="nextC">Researcher C向け</label><textarea id="nextC" placeholder="TASK_Cの内容"></textarea></div>
+          <div class="span-6 field"><label for="nextD">Researcher D向け</label><textarea id="nextD" placeholder="TASK_Dの内容"></textarea></div>
+        </div>
+        <button class="btn" id="applyNextTasks">個別指示を保存</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-validation">
+    <div class="section-title"><h2>Validator — Cold Check</h2><span class="muted tiny">発見者と検証者を分ける</span></div>
+    <div class="grid">
+      <div class="card span-6">
+        <h2>検証対象</h2>
+        <div class="field"><label for="candidateId">候補ID</label><input id="candidateId" placeholder="EXP001-C001"></div>
+        <div class="field"><label for="candidateClaim">命題・候補の主張</label><textarea id="candidateClaim" placeholder="検証したい命題を正確に記入"></textarea></div>
+        <div class="field"><label for="candidateAssumptions">定義・仮定・条件</label><textarea id="candidateAssumptions" placeholder="変数の範囲、前提条件、定義など"></textarea></div>
+        <div class="field"><label for="candidateProof">発見者の証明案（Proof Auditで使用）</label><textarea id="candidateProof" placeholder="最初のBlind Verificationでは空欄のままにしてください"></textarea></div>
+        <div class="row"><button class="btn primary" id="makeBlind">Blind Verificationを生成</button><button class="btn" id="makeAudit">Proof Auditを生成</button></div>
+      </div>
+      <div class="card span-6">
+        <div class="section-title"><h2>Validator用プロンプト</h2><button class="btn primary" id="copyValidator">コピー</button></div>
+        <div class="output" id="validatorOutput"></div>
+        <div class="divider"></div>
+        <h3>候補の登録</h3>
+        <div class="field"><label for="candidateStatus">現在の状態</label><select id="candidateStatus"><option>UNVERIFIED</option><option>ACTIVE</option><option>VERIFIED</option><option>REJECTED</option><option>PRUNED</option></select></div>
+        <button class="btn" id="saveCandidate">候補台帳に登録・更新</button>
+        <div id="candidateList" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="tab-archive">
+    <div class="section-title"><h2>データ保管・バックアップ</h2><span class="status done">LOCAL FIRST</span></div>
+    <div class="grid">
+      <div class="card span-6">
+        <h2>バックアップ</h2>
+        <p class="muted small">このツールはAPIやGoogle Driveに接続しません。データはこのブラウザ内に自動保存し、JSONバックアップを定期的に書き出してください。</p>
+        <div class="row"><button class="btn primary" id="exportJson">JSONバックアップを保存</button><button class="btn" id="copyBackup">バックアップJSONをコピー</button></div>
+        <div class="field" style="margin-top:15px"><label for="importFile">バックアップを読み込む</label><input type="file" id="importFile" accept=".json,application/json"></div>
+        <button class="btn" id="importJson">選択したJSONを復元</button>
+        <div class="notice warn" style="margin-top:13px">復元すると現在の作業データを置き換えます。先に現在のデータをバックアップしてください。</div>
+      </div>
+      <div class="card span-6">
+        <h2>研究記録の原則</h2>
+        <ul class="muted small" style="padding-left:18px;margin:0;line-height:1.9">
+          <li>AIの返答原文はそのまま保存する</li>
+          <li>修正は上書きせず、新しい記録として追加する</li>
+          <li>候補は消さず、状態を変更して履歴を残す</li>
+          <li>Normalの回答は研究AIの集約入力に混ぜない</li>
+          <li>モデル名・バージョンは実験ノートに記録する</li>
+        </ul>
+        <div class="divider"></div>
+        <div class="field"><label for="modelNotes">使用モデル・アカウントのメモ（匿名ID推奨）</label><textarea id="modelNotes" placeholder="例：A=Model X / B=Model Y / C=Model Z / D=Model W"></textarea></div>
+        <button class="btn" id="saveModelNotes">メモを保存</button>
+      </div>
+      <div class="card span-12">
+        <div class="section-title"><h2>全体データの確認</h2><button class="btn ghost" id="copyArchiveText">一覧テキストをコピー</button></div>
+        <div id="archiveSummary" class="muted small"></div>
+      </div>
+      <div class="card span-12">
+        <h2>このツールの制約</h2>
+        <div class="notice">このControl Panelは手動運用を補助するローカルツールです。AIアカウントへの自動送信、Google Driveへの同期、回答の自動取得は行いません。生成したプロンプトを各AIに貼り、返答をこの画面に貼り付けてください。ブラウザのデータ消去・別端末への移動に備え、JSONバックアップを保管してください。</div>
+      </div>
+    </div>
+  </section>
+  </main>
+  <footer class="footer">TMR Manual Simulation · Control Panel v0.3 · Offline / No API · データの正本は定期的に書き出したJSONバックアップです。</footer>
+</div>
+<div id="toast" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#e0f2fe;color:#082f49;padding:10px 16px;border-radius:12px;font-size:12px;font-weight:800;box-shadow:0 10px 30px #0008;opacity:0;pointer-events:none;transition:opacity .2s;z-index:99"></div>
+<script>
+(function(){
+'use strict';
+const KEY='tmr_control_panel_v03';
+const ROLES={
+ A:{name:'Researcher A',role:'構造分析',desc:'問題の抽象化、不変量、対称性、変換、問題の骨格'},
+ B:{name:'Researcher B',role:'知識照合',desc:'既知理論・定理・異分野の概念との構造的接続'},
+ C:{name:'Researcher C',role:'自由探索',desc:'担当分野に縛られない発想、別表現、一般化候補'},
+ D:{name:'Researcher D',role:'批判的探索',desc:'反例、境界条件、必要十分性、条件の不足'},
+ MONITOR:{name:'Meta Monitor',role:'研究統合・進行管理',desc:'提出済み記録の比較、重複・矛盾・空白領域、次タスク生成'},
+ VALIDATOR:{name:'Validator',role:'独立検証',desc:'命題の真偽と証明の妥当性を分離して検証'},
+ NORMAL:{name:'Normal',role:'独立通常解答',desc:'TMR情報から隔離した通常の数学的解答'}
+};
+const $=id=>document.getElementById(id);
+let state=load()||fresh();
+function fresh(){return {version:'0.3',meta:{experimentId:'EXP001',title:'',problem:'',materials:'',round:1,phase:'INDEPENDENT_EXPLORATION',modelNotes:'',createdAt:new Date().toISOString()},entries:[],candidates:[],nextTasks:{A:'',B:'',C:'',D:''},monitorExtra:''};}
+function load(){try{const s=localStorage.getItem(KEY);return s?JSON.parse(s):null}catch(e){return null}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));$('lastSaved').textContent='自動保存済み · '+new Date().toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'});}catch(e){$('lastSaved').textContent='ブラウザ内保存が利用できません。JSONバックアップを使用してください。';}renderStats();}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function toast(msg){const t=$('toast');t.textContent=msg;t.style.opacity='1';clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.style.opacity='0',1900)}
+async function copyText(text){try{await navigator.clipboard.writeText(text);toast('コピーしました')}catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('コピーしました')}catch(_){toast('コピーできません。テキストを選択してコピーしてください')}ta.remove()}}
+function getVal(id){return $(id).value.trim()}
+function syncFromForm(){state.meta.experimentId=getVal('experimentId')||'EXP001';state.meta.title=getVal('experimentTitle');state.meta.problem=getVal('problem');state.meta.materials=getVal('sharedMaterials');state.meta.round=Math.max(1,Number($('roundNumber').value)||1);state.meta.phase=$('phase').value;state.monitorExtra=getVal('monitorExtra');state.nextTasks={A:getVal('nextA'),B:getVal('nextB'),C:getVal('nextC'),D:getVal('nextD')};state.meta.modelNotes=getVal('modelNotes');}
+function hydrate(){ $('experimentId').value=state.meta.experimentId||'EXP001';$('experimentTitle').value=state.meta.title||'';$('problem').value=state.meta.problem||'';$('sharedMaterials').value=state.meta.materials||'';$('roundNumber').value=state.meta.round||1;$('phase').value=state.meta.phase||'INDEPENDENT_EXPLORATION';$('taskRound').value=state.meta.round||1;$('responseRound').value=state.meta.round||1;$('monitorRound').value=state.meta.round||1;$('modelNotes').value=state.meta.modelNotes||'';$('monitorExtra').value=state.monitorExtra||'';['A','B','C','D'].forEach(k=>{ $('next'+k).value=state.nextTasks?.[k]||'';});renderAll();}
+function addEntry(agent,type,round,text,messageId=''){const rec={id:'REC-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase(),agent,type,round:Number(round)||1,messageId,text,createdAt:new Date().toISOString()};state.entries.unshift(rec);persist();renderRecords();renderArchive();return rec;}
+function latestEntry(agent,type,round){return state.entries.find(e=>e.agent===agent&&e.type===type&&(round===undefined||Number(e.round)===Number(round)));}
+function idPart(s){return String(s).replace(/[^A-Za-z0-9_-]/g,'_')}
+function header(target,type,round){const exp=state.meta.experimentId||'EXP001';return `[TMR MESSAGE]\nMESSAGE_ID: TMR-${idPart(exp)}-R${round}-${target}-${type}\nEXPERIMENT_ID: ${exp}\nPROTOCOL_VERSION: 0.3\nTARGET: ${target}\nMESSAGE_TYPE: ${type}\nROUND: ${round}\nPHASE: ${state.meta.phase}\n`}
+function commonConstitution(){return `\n[COMMON CONSTITUTION — TMR]\nあなたは数学研究支援システムTRINITY MATH RESEARCH（TMR）の一員である。目的は、問題の構造を抽象化し、知識の構造と照合し、数学的に意味のある接続候補を作り、検証可能な記録を残すこと。単なる解答生成だけを目的としない。\n\n基本方針：「問題をぼかす → ぼやけた知識で見合わせる」。工程は、問題の抽象化→知識の抽象化→構造照合→接続候補の構成→数学的検証。表面的な式の類似だけでなく、定義・写像・不変量・条件・構造の対応を説明する。\n\n[RESEARCH RULES]\n1. 数値実験・予想・補題候補・部分的成果・証明を明確に区別する。\n2. 必要条件と十分条件を混同しない。特別な例から一般化しない。\n3. 反例、矛盾、失敗した方向も記録する。\n4. 既知定理を使う場合、問題との構造的接続と適用条件を示す。\n5. NOVEL（新規性）とCORRECT（正しさ）を別々に評価する。既存文献未確認の成果を世界初と主張しない。\n6. 内部思考の逐語的な開示は不要。第三者が検証できる定義、式、計算、論拠、未解決点を記録する。\n7. 不明な点を推測で埋めず、未確認と明記する。\n\n[WALL TAXONOMY]\nWALL_1 情報不足 / WALL_2 構造的不一致 / WALL_3 必要条件しか得られない / WALL_4 条件不足 / WALL_5 反例・矛盾 / WALL_6 既存理論との接続不足 / WALL_7 探索方向の不適切さ。\n\n[CANDIDATE STATUS]\nACTIVE / PRUNED / VERIFIED / UNVERIFIED / REJECTED。検証前の候補をVERIFIEDにしない。\n\n[OUTPUT RULE]\n回答の先頭に実験ID・エージェントID・ROUND・PHASEを記載する。数学的な説明は十分に記述し、結論だけに縮めない。回答末尾に次の行動と未解決点を記録する。\n`}
+function responseFormat(){return `\n[TMR RESPONSE FORMAT]\nEXPERIMENT_ID:\nMESSAGE_ID:\nAGENT_ID:\nROUND:\nPHASE:\n\n[RESULT]\n今回の成果の概要\n\n[ABSTRACTION]\n抽出した構造・定義・不変量\n\n[STRUCTURAL_MATCHING]\n照合した知識、対応する点、相違点、接続理由\n\n[CANDIDATES]\n候補ID（未割当ならTEMP-ID）／主張／分類（数値実験・予想・補題候補・部分的成果・証明）／根拠／NOVEL評価／CORRECT評価／状態\n\n[VERIFICATION]\n確認できた事項、未確認の事項、必要条件、反例の有無\n\n[WALL]\nWALL番号またはNONE、理由\n\n[NEXT_ACTION]\nCONTINUE / CHANGE_DIRECTION / PRUNE / STOP と理由\n\n[SUMMARY]\n第三者が追跡できる研究記録\n\n[END_RESPONSE]`}
+function problemBlock(){return `\n[PROBLEM]\n${state.meta.problem||'（問題文未入力）'}\n\n[COMMON MATERIALS]\n${state.meta.materials||'なし'}\n`}
+function initPrompt(target){let role=ROLES[target];if(target==='NORMAL')return `[INDEPENDENT SOLVER SETUP]\nあなたは数学の問題を独立して解くアシスタントです。以後、ユーザーが提示する問題について、定義・条件を正確に読み取り、適切な数学的解法を提示してください。必要に応じて別解や検算を示し、証明と推測を区別してください。問題文にない仮定を勝手に追加せず、不明点は明記してください。回答は第三者が追えるように、根拠と計算を示してください。\n初期設定を理解したら、余計な分析を始めず「READY」とだけ返答してください。`;
+if(target==='MONITOR')return `[TMR META MONITOR — INITIAL SETUP]\nあなたはTMRのMeta Monitorである。研究者A〜Dの提出済み研究記録を受け取り、比較・統合・進行管理を行う。あなた自身が研究者の結論を代弁してはならない。\n\n役割：\n- 独立探索の結果を保持し、共通点・相違点・重複・矛盾を分類する。\n- 候補を統合する場合も、元の発見者と原文記録を保持する。\n- 未探索領域と、次ROUNDで有効な個別タスクを提案する。\n- 候補の正しさを承認するのではなく、検証対象としてValidatorへ送る。\n- Normalの記録は受け取らない。\n- 受け取っていない回答を推測で補完しない。\n\n情報共有段階：L0=問題と共通資料のみ、L1=定義・共通背景、L2=Monitor要約・候補、L3=他AIの詳細記録。共有する情報レベルを各タスクで明記する。\n\n出力：集約表、候補間の関係、矛盾・欠落、優先順位、TASK_A〜D、VALIDATION_QUEUE、MASTER_UPDATE。命題の正しさと新規性は独立に扱う。\n\n初期設定を理解したら「READY」とだけ返答する。`;
+if(target==='VALIDATOR')return `[TMR VALIDATOR — INITIAL SETUP]\nあなたはTMRの独立検証者である。研究者やMonitorの評価に同調せず、与えられた命題を数学的に検証する。\n\n検証は二段階：\n1. BLIND VERIFICATION：候補の命題・定義・仮定だけから真偽を独立に調べる。発見者の説明・証明案は見ない。\n2. PROOF AUDIT：その後に証明案を読み、各推論、条件、場合分け、等号成立、境界、量化を監査する。\n\n判定は VERIFIED（主張と提示証明を確認）/ PARTIALLY_VERIFIED（限定条件でのみ確認）/ UNVERIFIED（決着せず）/ REJECTED（反例または論理的誤り）を使う。反例がある場合は条件を明記する。正しい主張でも証明案が誤っていれば、その二つを分けて報告する。\n\n初期設定を理解したら「READY」とだけ返答する。`;
+return header(target,'INIT',0)+commonConstitution()+`\n[ROLE DEFINITION]\nあなたの担当は ${role.name} — ${role.role}。\n${role.desc}。\nこの担当は探索の優先順位であり、重要な発見を担当外として無視する理由にはならない。\n\n[INDEPENDENCE]\nA〜Dは独立した作業空間である。他の研究AIの存在や結論を推測して合わせない。ROUND 1では自分のFirst Recallと自分の探索記録だけを用いる。他AIの出力を受け取っていない場合、見たふりをしない。\n\n[FIRST RECALL FREEZE]\n最初のRECALLで、開始時点で知っている関連定義・定理・公式・手法を列挙する。提出後はFirst Recallを変更しない。後から思い出した知識は「追加知識」として別記録する。\n\n[ROUND RULE]\n1メッセージにつき1 ROUNDを実行する。過去記録が渡された場合は、新規探索と過去記録の再掲を区別する。\n\n${responseFormat()}\n\n初期設定を理解したら「READY」とだけ返答する。`;}
+function recallPrompt(target,round){return header(target,'RECALL',round)+problemBlock()+commonConstitution()+`\n[TASK]\nまだ本格的な探索・解答を始めず、この問題に関連して開始時点で利用可能な既知知識をFIRST_RECALLとして列挙せよ。定義、定理、公式、典型的構造、関連分野を記す。各項目について、確実に知っていることと曖昧な記憶を区別する。\n\n[FIRST_RECALL FREEZE]\nこの回答が初期知識の固定記録となる。以後、内容を変更・追加しない。後から思い出したものは追加知識として別枠にする。\n\n[OUTPUT]\n[FIRST_RECALL] / [UNCERTAIN_RECALL] / [POTENTIAL_RELEVANCE] / [BOUNDARIES]\n${responseFormat()}`}
+function researchPrompt(target,round,individual='',shared=''){let recall=latestEntry(target,'RECALL',1);let prior=latestEntry(target,'RESEARCH',round-1);let task=individual||state.nextTasks[target]||ROLES[target].desc;return header(target,'RESEARCH',round)+problemBlock()+`\n[FIXED FIRST RECALL]\n${recall?recall.text:'First Recallの保存記録が見つかりません。初期知識を新たに捏造せず、未提供と明記してください。'}\n\n[PRIOR ROUND RECORD]\n${prior?prior.text:'（前ROUNDの研究記録なし）'}\n\n[SHARED INFORMATION — LEVEL ${shared?'L2':'L0'}]\n${shared||'他研究AIの結果は共有されていない。独立性を維持すること。'}\n\n[INDIVIDUAL TASK]\n${task}\n\n[RESTRICTIONS]\n- 他研究AIの結果を推測しない。\n- First Recallを変更しない。\n- 数値実験を証明として扱わない。\n- 候補ごとに条件・根拠・未確認点を記録する。\n\n${responseFormat()}`}
+function normalPrompt(){return `[MATH PROBLEM]\n${state.meta.problem||'（問題文未入力）'}\n\n[COMMON DEFINITIONS OR MATERIALS]\n${state.meta.materials||'なし'}\n\n[TASK]\nこの問題を独立に解答してください。定義と条件を確認し、解法を構成し、必要な計算や証明を示してください。解けない場合は、どこまで分かり何が障害かを明記してください。別AIの研究結果や特定の研究システムの情報は与えられていません。通常の数学的解答として回答してください。`}
+function monitorPrompt(round){let arr=['A','B','C','D'].map(k=>{let e=latestEntry(k,'RESEARCH',round);return `\n========== ${ROLES[k].name} / ROUND ${round} =========\n${e?e.text:'[NO RESPONSE SAVED] 回答未回収。内容を推測しないこと。'}`}).join('\n');return `[TMR MONITOR TASK]\nEXPERIMENT_ID: ${state.meta.experimentId}\nROUND: ${round}\nMESSAGE_TYPE: MONITOR_ANALYSIS\n\n[PROBLEM]\n${state.meta.problem}\n\n[RESEARCHER RESPONSES — RAW]\n${arr}\n\n[ADDITIONAL REQUEST]\n${getVal('monitorExtra')||'特になし'}\n\n[TASK]\nA〜Dの提出済み記録だけを分析する。研究者同士の結論を無理に一つへ統合せず、相違も保存する。\n\n[OUTPUT FORMAT]\n1. COVERAGE：受領状況と欠落\n2. COMMON POINTS：共通する構造\n3. DIVERGENCES：異なる見解・矛盾\n4. CANDIDATE REGISTER：候補ID案、発見者、内容、根拠、状態\n5. UNEXPLORED AREAS：未探索領域\n6. PRIORITY：次に調べる価値のある順序と理由\n7. TASK_A / TASK_B / TASK_C / TASK_D：各AIに対する異なる個別指示。相互に必要な共有情報レベルL0〜L3を明記\n8. VALIDATION_QUEUE：Validatorに渡す候補の主張・定義・仮定（証明案は別管理）\n9. MASTER_UPDATE：新規候補、状態変更、親子関係、WALLの更新\n10. UNCERTAINTIES：Monitor自身が判断できない点\n\n候補の真偽を確定したように表現しない。Normalの結果は扱わない。`}
+function nextTaskPrompt(target,round){const task=getVal('taskSpecific')||state.nextTasks[target]||'Monitorの個別指示に従って探索を継続する。';return researchPrompt(target,round,task,getVal('sharedData'));}
+function validatorPrompt(audit){const claim=getVal('candidateClaim'),ass=getVal('candidateAssumptions'),id=getVal('candidateId')||'TEMP-CANDIDATE';if(!audit)return `[TMR VALIDATOR MESSAGE]\nMESSAGE_TYPE: BLIND_VERIFY\nEXPERIMENT_ID: ${state.meta.experimentId}\nCANDIDATE_ID: ${id}\n\n[CLAIM — BLIND]\n${claim}\n\n[DEFINITIONS AND ASSUMPTIONS]\n${ass}\n\n[TASK]\n発見者の説明や証明案は見ず、命題そのものを独立に検証する。真偽、成立範囲、必要条件、反例、未確定部分を調べる。\n\n[OUTPUT]\n- 独立した問題の定式化\n- 判定：VERIFIED / PARTIALLY_VERIFIED / UNVERIFIED / REJECTED\n- 厳密な根拠または反例\n- 成立に必要な追加条件\n- 未解決の論点\n- 証明案をまだ見ていないことの確認\n\n証明案を推測せず、命題だけを検証すること。`;
+return `[TMR VALIDATOR MESSAGE]\nMESSAGE_TYPE: PROOF_AUDIT\nEXPERIMENT_ID: ${state.meta.experimentId}\nCANDIDATE_ID: ${id}\n\n[CLAIM]\n${claim}\n\n[DEFINITIONS AND ASSUMPTIONS]\n${ass}\n\n[PROOF TO AUDIT]\n${getVal('candidateProof')}\n\n[BLIND VERIFICATION RESULT — OPTIONAL CONTEXT]\n（必要な場合のみ、別途独立検証の結果を記載）\n\n[TASK]\n証明案を一行ずつ監査する。各推論の妥当性、定義域、量化、必要条件、等号成立、場合分け、境界ケース、暗黙の仮定を確認する。主張自体の真偽と証明案の妥当性を分けて判定する。\n\n[OUTPUT]\n- 判定：VERIFIED / PARTIALLY_VERIFIED / UNVERIFIED / REJECTED\n- 証明の各段階の監査\n- 最初に問題が生じる箇所（あれば）\n- 反例または修正案\n- 命題の真偽と証明の正しさの個別判定\n- 未解決部分`}
+function finalPrompt(){const all=state.entries.filter(e=>['A','B','C','D','MONITOR','VALIDATOR','NORMAL'].includes(e.agent)).map(e=>`\n--- ${e.agent} / ${e.type} / R${e.round} ---\n${e.text}`).join('\n');return `[TMR FINAL REPORT]\nEXPERIMENT_ID: ${state.meta.experimentId}\nTITLE: ${state.meta.title}\n\n[PROBLEM]\n${state.meta.problem}\n\n[ARCHIVED RECORDS]\n${all}\n\n[TASK]\n記録の範囲内で最終報告を作成する。証明済み成果、部分的成果、予想、棄却された候補、未解決点を区別する。TMRの探索とNormalの通常解答を比較するが、Normalの結果をTMR研究者の独立探索に混ぜない。新規性は文献調査なしに確定しない。`}
+function generate(target,type,round){syncFromForm();const shared=getVal('sharedData');let p='';if(type==='INIT')p=initPrompt(target);else if(type==='RECALL')p=recallPrompt(target,round);else if(type==='RESEARCH')p=researchPrompt(target,round,getVal('taskSpecific'),shared);else if(type==='NORMAL_SOLVE')p=normalPrompt();else if(type==='MONITOR_ANALYSIS')p=monitorPrompt(round);else if(type==='NEXT_TASK')p=nextTaskPrompt(target,round);else if(type==='BLIND_VERIFY')p=validatorPrompt(false);else if(type==='PROOF_AUDIT')p=validatorPrompt(true);else if(type==='FINAL_REPORT')p=finalPrompt();$('promptOutput').textContent=p;state.lastGenerated={target,type,round,p};persist();return p;}
+function renderAgentCards(){const wrap=$('agentCards');wrap.innerHTML=Object.entries(ROLES).map(([k,v])=>`<div class="agent"><div class="row between"><span class="id">${k==='MONITOR'?'M':k==='VALIDATOR'?'V':k==='NORMAL'?'N':k}</span><span class="status ${latestEntry(k,'RESEARCH',state.meta.round)||latestEntry(k,'NORMAL_SOLVE',state.meta.round)?'done':'none'}">${latestEntry(k,'RESEARCH',state.meta.round)||latestEntry(k,'NORMAL_SOLVE',state.meta.round)?'回答保存済み':'待機'}</span></div><div class="role">${esc(v.name)} · ${esc(v.role)}</div><div class="desc">${esc(v.desc)}</div></div>`).join('');}
+function renderStats(){if(!$('statRecords'))return;const rr=Number(state.meta.round)||1;$('topExp').textContent=state.meta.experimentId||'EXP001';$('topRound').textContent=rr;$('statRecords').textContent=state.entries.length;$('statCandidates').textContent=state.candidates.length;$('statValidated').textContent=state.candidates.filter(c=>c.status==='VERIFIED').length;let n=['A','B','C','D'].filter(k=>latestEntry(k,'RESEARCH',rr)).length;$('statResearchers').textContent=n+'/4';renderAgentCards();}
+function renderRecords(){const list=$('recordList');$('recordCount').textContent=state.entries.length+'件';const f=$('recordFilter').value;const entries=state.entries.filter(e=>f==='ALL'||e.agent===f);if(!entries.length){list.innerHTML='<div class="empty">該当する回答はありません。</div>';return;}list.innerHTML=entries.slice(0,80).map(e=>`<div class="record"><div class="record-head"><div><strong>${esc(e.agent)}</strong> <span class="tag">${esc(e.type)}</span> <span class="tag">R${e.round}</span><div class="tiny muted">${esc(e.id)} · ${new Date(e.createdAt).toLocaleString('ja-JP')}</div></div><button class="btn ghost" data-copy-record="${esc(e.id)}">原文コピー</button></div><pre>${esc(e.text.slice(0,1400))}${e.text.length>1400?'\n…（全文はJSONバックアップに保存）':''}</pre></div>`).join('');list.querySelectorAll('[data-copy-record]').forEach(b=>b.addEventListener('click',()=>{let e=state.entries.find(x=>x.id===b.dataset.copyRecord);if(e)copyText(e.text)}));}
+function renderCandidates(){const el=$('candidateList');if(!state.candidates.length){el.innerHTML='<div class="empty">候補はまだ登録されていません。</div>';return;}el.innerHTML=state.candidates.map(c=>`<div class="record"><div class="record-head"><div><strong>${esc(c.id)}</strong> <span class="tag">${esc(c.status)}</span><div class="tiny muted">${esc(c.updatedAt||'')}</div></div></div><div class="small" style="margin-top:6px">${esc(c.claim)}</div></div>`).join('');}
+function renderArchive(){const el=$('archiveSummary');if(!el)return;const by={};state.entries.forEach(e=>by[e.agent]=(by[e.agent]||0)+1);el.textContent=`実験：${state.meta.experimentId} / ${state.meta.title||'名称未設定'}　|　問題文：${state.meta.problem?'登録済み':'未登録'}　|　回答レコード：${state.entries.length}　|　候補：${state.candidates.length}　|　エージェント別：${Object.entries(by).map(([k,v])=>k+' '+v+'件').join('、')||'なし'}`;renderCandidates();}
+function renderAll(){renderStats();renderRecords();renderArchive();}
+function download(name,text,mime='application/json'){const blob=new Blob([text],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function exportJSON(){syncFromForm();const data={app:'TMR Control Panel',version:'0.3',exportedAt:new Date().toISOString(),state};download((state.meta.experimentId||'TMR')+'_backup_'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(data,null,2));toast('JSONバックアップを作成しました');}
+function archiveText(){return [`TMR ARCHIVE ${state.meta.experimentId}`,`TITLE: ${state.meta.title}`,`ROUND: ${state.meta.round}`,`PROBLEM:\n${state.meta.problem}`, ...state.entries.map(e=>`\n===== ${e.id} | ${e.agent} | ${e.type} | R${e.round} =====\n${e.text}`)].join('\n');}
+function switchTab(name){document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+name));window.scrollTo({top:0,behavior:'smooth'});}
+// Navigation
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+// Setup fields autosave
+['experimentId','experimentTitle','problem','sharedMaterials','roundNumber','phase','modelNotes','monitorExtra','nextA','nextB','nextC','nextD'].forEach(id=>$(id).addEventListener('change',()=>{syncFromForm();persist()}));
+$('saveSetup').addEventListener('click',()=>{syncFromForm();persist();toast('実験設定を保存しました')});
+$('nextRound').addEventListener('click',()=>{$('roundNumber').value=Number($('roundNumber').value||1)+1;$('taskRound').value=$('roundNumber').value;$('responseRound').value=$('roundNumber').value;$('monitorRound').value=Math.max(1,Number($('roundNumber').value)-1);syncFromForm();persist();toast('ROUNDを更新しました')});
+// Prompt generation
+$('generatePrompt').addEventListener('click',()=>{const p=generate(getVal('targetAgent'),getVal('messageType'),Number(getVal('taskRound'))||1);if(!p)toast('生成できませんでした')});
+$('copyPrompt').addEventListener('click',()=>copyText($('promptOutput').textContent));
+$('clearPrompt').addEventListener('click',()=>{$('taskSpecific').value='';$('sharedData').value='';$('promptOutput').textContent='';});
+document.querySelectorAll('[data-init]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.init;$('targetAgent').value=k;$('messageType').value='INIT';$('taskRound').value=0;switchTab('prompts');generate(k,'INIT',0)}));
+// Responses
+$('saveResponse').addEventListener('click',()=>{const text=getVal('responseText');if(!text){toast('回答原文を入力してください');return;}syncFromForm();const r=addEntry(getVal('responseAgent'),getVal('responseType'),getVal('responseRound'),$('responseText').value,getVal('responseMessageId'));$('responseText').value='';$('responseMessageId').value='';toast('回答を保存しました：'+r.id);});
+$('recordFilter').addEventListener('change',renderRecords);
+// Monitor
+$('buildMonitor').addEventListener('click',()=>{syncFromForm();const r=Number(getVal('monitorRound'))||1;const p=monitorPrompt(r);$('monitorOutput').textContent=p;state.lastMonitorPrompt=p;persist()});
+$('copyMonitor').addEventListener('click',()=>copyText($('monitorOutput').textContent));
+$('applyNextTasks').addEventListener('click',()=>{syncFromForm();persist();toast('個別指示を保存しました')});
+// Validation
+$('makeBlind').addEventListener('click',()=>{$('validatorOutput').textContent=validatorPrompt(false);$('targetAgent').value='VALIDATOR';$('messageType').value='BLIND_VERIFY';});
+$('makeAudit').addEventListener('click',()=>{$('validatorOutput').textContent=validatorPrompt(true);$('targetAgent').value='VALIDATOR';$('messageType').value='PROOF_AUDIT';});
+$('copyValidator').addEventListener('click',()=>copyText($('validatorOutput').textContent));
+$('saveCandidate').addEventListener('click',()=>{const id=getVal('candidateId'),claim=getVal('candidateClaim');if(!id||!claim){toast('候補IDと命題を入力してください');return;}const old=state.candidates.find(c=>c.id===id);const item={id,claim,assumptions:getVal('candidateAssumptions'),proof:getVal('candidateProof'),status:getVal('candidateStatus'),updatedAt:new Date().toLocaleString('ja-JP')};if(old)Object.assign(old,item);else state.candidates.push(item);persist();renderCandidates();toast('候補台帳を更新しました')});
+// Archive
+$('exportJson').addEventListener('click',exportJSON);$('quickExport').addEventListener('click',exportJSON);
+$('copyBackup').addEventListener('click',()=>{syncFromForm();copyText(JSON.stringify({app:'TMR Control Panel',version:'0.3',exportedAt:new Date().toISOString(),state},null,2))});
+$('copyArchiveText').addEventListener('click',()=>copyText(archiveText()));
+$('saveModelNotes').addEventListener('click',()=>{syncFromForm();persist();toast('モデルメモを保存しました')});
+$('importJson').addEventListener('click',()=>{const file=$('importFile').files[0];if(!file){toast('JSONファイルを選択してください');return;}const reader=new FileReader();reader.onload=()=>{try{const obj=JSON.parse(reader.result);const incoming=obj.state||obj;if(!incoming.meta||!Array.isArray(incoming.entries))throw new Error('形式が違います');if(!confirm('現在の作業データを置き換えて復元します。続行しますか？'))return;state=incoming;persist();hydrate();toast('バックアップを復元しました')}catch(e){alert('読み込みに失敗しました：'+e.message)}};reader.readAsText(file)});
+// Keyboard-friendly form defaults
+$('targetAgent').addEventListener('change',()=>{const k=getVal('targetAgent');if(k==='NORMAL')$('messageType').value='NORMAL_SOLVE';else if(k==='MONITOR')$('messageType').value='MONITOR_ANALYSIS';else if(k==='VALIDATOR')$('messageType').value='BLIND_VERIFY';else $('messageType').value='RESEARCH'});
+// Initialize
+hydrate();persist();
+})();
+</script>
+</body>
+</html>
